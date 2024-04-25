@@ -39,6 +39,25 @@ func getAndValidateTextRequest(c *gin.Context, relayMode int) (*relaymodel.Gener
 	return textRequest, nil
 }
 
+func GetAndValidateTextRequest(c *gin.Context, relayMode int) (*relaymodel.GeneralOpenAIRequest, error) {
+	textRequest := &relaymodel.GeneralOpenAIRequest{}
+	err := common.UnmarshalBodyReusable(c, textRequest)
+	if err != nil {
+		return nil, err
+	}
+	if relayMode == relaymode.Moderations && textRequest.Model == "" {
+		textRequest.Model = "text-moderation-latest"
+	}
+	if relayMode == relaymode.Embeddings && textRequest.Model == "" {
+		textRequest.Model = c.Param("model")
+	}
+	err = validator.ValidateTextRequest(textRequest, relayMode)
+	if err != nil {
+		return nil, err
+	}
+	return textRequest, nil
+}
+
 func getImageRequest(c *gin.Context, relayMode int) (*relaymodel.ImageRequest, error) {
 	imageRequest := &relaymodel.ImageRequest{}
 	err := common.UnmarshalBodyReusable(c, imageRequest)

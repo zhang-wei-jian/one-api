@@ -18,7 +18,10 @@ func SetRelayRouter(router *gin.Engine) {
 	}
 	relayV1Router := router.Group("/v1")
 	relayV1Router.Use(middleware.RelayPanicRecover(), middleware.TokenAuth(), middleware.Distribute())
+	// relayV1Router.Use(middleware.RelayPanicRecover(), middleware.TokenAuthSystemCode(), middleware.Distribute())
 	{
+		// 请求授权接口要直接成功
+		// relayV1Router.POST("/authorize", controller.Authorize)
 		relayV1Router.POST("/completions", controller.Relay)
 		relayV1Router.POST("/chat/completions", controller.Relay)
 		relayV1Router.POST("/edits", controller.Relay)
@@ -68,5 +71,10 @@ func SetRelayRouter(router *gin.Engine) {
 		relayV1Router.POST("/threads/:id/runs/:runsId/cancel", controller.RelayNotImplemented)
 		relayV1Router.GET("/threads/:id/runs/:runsId/steps/:stepId", controller.RelayNotImplemented)
 		relayV1Router.GET("/threads/:id/runs/:runsId/steps", controller.RelayNotImplemented)
+	}
+	authorizeRouter := router.Group("/authorize")
+	authorizeRouter.Use(middleware.RelayPanicRecover(), middleware.TokenAuthSystemCode(), middleware.Distribute(),middleware.SystemCode())
+	{
+		authorizeRouter.POST("", controller.Authorize)
 	}
 }

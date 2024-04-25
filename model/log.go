@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+
 	"github.com/songquanpeng/one-api/common"
 	"github.com/songquanpeng/one-api/common/config"
 	"github.com/songquanpeng/one-api/common/helper"
@@ -42,6 +43,22 @@ func RecordLog(userId int, logType int, content string) {
 		Username:  GetUsernameById(userId),
 		CreatedAt: helper.GetTimestamp(),
 		Type:      logType,
+		Content:   content,
+	}
+	err := LOG_DB.Create(log).Error
+	if err != nil {
+		logger.SysError("failed to record log: " + err.Error())
+	}
+}
+
+// 请求日志
+func RequestLog(userId int, logType int, content string) {
+
+	log := &Log{
+		UserId:    userId,
+		Username:  GetUsernameById(userId),
+		CreatedAt: helper.GetTimestamp(),
+		Type:      LogTypeConsume,
 		Content:   content,
 	}
 	err := LOG_DB.Create(log).Error

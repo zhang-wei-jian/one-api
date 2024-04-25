@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/songquanpeng/one-api/common"
 	"github.com/songquanpeng/one-api/common/config"
@@ -16,8 +19,6 @@ import (
 	"github.com/songquanpeng/one-api/relay/controller"
 	"github.com/songquanpeng/one-api/relay/model"
 	"github.com/songquanpeng/one-api/relay/relaymode"
-	"io"
-	"net/http"
 )
 
 // https://platform.openai.com/docs/api-reference/chat
@@ -94,6 +95,27 @@ func Relay(c *gin.Context) {
 			"error": bizErr.Error,
 		})
 	}
+}
+func Authorize(c *gin.Context) {
+	// tokenId := c.GetInt(ctxkey.TokenId)
+	// channelType := c.GetInt(ctxkey.Channel)
+	// channelId := c.GetInt(ctxkey.ChannelId)
+	// userId := c.GetInt(ctxkey.Id)
+	// group := c.GetString(ctxkey.Group)
+	// tokenName := c.GetString(ctxkey.TokenName)
+
+	// meta := meta.GetByContext(c)
+
+	// textRequest, err := controller.GetAndValidateTextRequest(c, meta.Mode)
+	// if err != nil {
+	// 	fmt.Print(err)
+	// }
+	// message := fmt.Sprintf("%s 请求了一次", group)
+	// // 保存日志
+	// logModel.RecordConsumeLog(c, userId, channelId, int(0), 0, textRequest.Model, tokenName, 0, message)
+
+	// 返回 JSON 响应
+	c.JSON(200, "ok")
 }
 
 func shouldRetry(c *gin.Context, statusCode int) bool {

@@ -32,6 +32,8 @@ type Token struct {
 	UsedQuota      int64   `json:"used_quota" gorm:"bigint;default:0"` // used quota
 	Models         *string `json:"models" gorm:"default:''"`           // allowed models
 	Subnet         *string `json:"subnet" gorm:"default:''"`           // allowed subnet
+	SystemCode     string  `json:"system_code" gorm:"default:''"`      // 机器码
+
 }
 
 func GetAllUserTokens(userId int, startIdx int, num int, order string) ([]*Token, error) {
@@ -131,6 +133,14 @@ func (token *Token) Insert() error {
 func (token *Token) Update() error {
 	var err error
 	err = DB.Model(token).Select("name", "status", "expired_time", "remain_quota", "unlimited_quota", "models", "subnet").Updates(token).Error
+	return err
+}
+
+// Update Make sure your token's fields is completed, because this will update non-zero values
+func (token *Token) Save() error {
+	var err error
+	// err = DB.Model(token).Select("name", "status", "expired_time", "remain_quota", "unlimited_quota", "models", "subnet").Updates(token).Error
+	err = DB.Save(token).Error
 	return err
 }
 

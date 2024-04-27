@@ -68,6 +68,10 @@ func SystemCode() func(c *gin.Context) {
 
 		if token.SystemCode == "" {
 			// 数据库没有存储机器码，则存储
+			if systemCodeHeader == "" {
+				abortWithMessage(c, http.StatusForbidden, "请求携带systemCode不能为空")
+				return
+			}
 			token.SystemCode = systemCodeHeader
 			err := token.Save()
 			logModel.RecordConsumeLog(c, userId, channelId, int(0), 0, textRequest.Model, tokenName, 0, "首次注册使用了机器码")
@@ -86,12 +90,10 @@ func SystemCode() func(c *gin.Context) {
 				return
 			}
 		}
-
-		message := fmt.Sprintf("%s 请求了一次", group)
 		// 保存日志
-
+		message := fmt.Sprintf("%s 请求了一次", group)
 		logModel.RecordConsumeLog(c, userId, channelId, int(0), 0, textRequest.Model, tokenName, 0, message)
-
+		model.UpdateUserUsedQuotaAndRequestCount(meta.UserId, 0)
 		// if SystemCode == "" {
 		// 	// 数据库没有存储机器码，则存储
 
